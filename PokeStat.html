@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PokeStat</title>
+<style>
+:root{--bg1:#7aa8ff;--bg2:#ff9ec7;--bg3:#8ff0d0;--glass:rgba(255,255,255,.38);--glass2:rgba(255,255,255,.55);--bd:rgba(255,255,255,.65);--tx:#10131c;--tx2:#4a5166;--sh:0 8px 32px rgba(40,50,90,.18);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#1b2a6b;--bg2:#5a1f55;--bg3:#0f4f4a;--glass:rgba(40,44,64,.45);--glass2:rgba(70,76,104,.55);--bd:rgba(255,255,255,.16);--tx:#f2f4fb;--tx2:#a9b0c6;--sh:0 8px 32px rgba(0,0,0,.45)}}
+:root[data-theme="dark"]{--bg1:#1b2a6b;--bg2:#5a1f55;--bg3:#0f4f4a;--glass:rgba(40,44,64,.45);--glass2:rgba(70,76,104,.55);--bd:rgba(255,255,255,.16);--tx:#f2f4fb;--tx2:#a9b0c6;--sh:0 8px 32px rgba(0,0,0,.45)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;color:var(--tx);background:var(--bg1);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 15% 10%,var(--bg2),transparent 45%),radial-gradient(circle at 85% 30%,var(--bg3),transparent 45%),radial-gradient(circle at 40% 95%,var(--bg1),transparent 55%),var(--bg1)}
+.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--bd);box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.5);border-radius:24px}
+header{max-width:900px;margin:0 auto;padding:22px 16px 6px}
+h1{margin:0;font-size:34px;letter-spacing:-.5px}
+h1 span{background:linear-gradient(90deg,#ff5c8a,#ffb347);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--tx2);margin:2px 0 14px;font-size:14px}
+main{max-width:900px;margin:0 auto;padding:0 16px 120px}
+input[type=search]{width:100%;padding:13px 16px;border-radius:16px;border:1px solid var(--bd);background:var(--glass2);color:var(--tx);font-size:16px;outline:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+.chip{flex:none;padding:7px 13px;border-radius:99px;border:1px solid var(--bd);background:var(--glass);color:var(--tx);font-size:13px;cursor:pointer;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.chip.on{background:var(--tx);color:var(--bg1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{padding:14px;cursor:pointer;transition:transform .2s}
+.card:active{transform:scale(.97)}
+.orb{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;box-shadow:inset 0 6px 14px rgba(255,255,255,.55),inset 0 -8px 14px rgba(0,0,0,.2),0 6px 14px rgba(0,0,0,.2)}
+.card b{display:block;font-size:16px}
+.tg{display:inline-block;padding:3px 9px;border-radius:99px;color:#fff;font-size:11.5px;font-weight:600;margin:4px 4px 0 0}
+.gen{float:right;font-size:11px;color:var(--tx2)}
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;padding:6px;z-index:20;border-radius:99px}
+.tabbar button{border:0;background:none;color:var(--tx2);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:600;cursor:pointer}
+.tabbar button.on{background:var(--glass2);color:var(--tx);box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.sheet{position:fixed;inset:0;z-index:30;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.35)}
+.sheet.open{display:flex}
+.panel{width:100%;max-width:640px;max-height:88vh;overflow:auto;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));border-radius:28px 28px 0 0;background:var(--glass2)}
+.panel h2{margin:0}
+.panel h3{margin:18px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--tx2)}
+.x{float:right;border:0;background:var(--glass);color:var(--tx);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
+.row{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}
+.row .l{width:42px;color:var(--tx2)}.row .n{width:30px;text-align:right;font-weight:600}
+.bar{flex:1;height:9px;border-radius:9px;background:rgba(128,128,128,.22);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:9px}
+.mv{display:inline-block;padding:6px 11px;margin:0 6px 6px 0;border-radius:12px;background:var(--glass);border:1px solid var(--bd);font-size:13px}
+.w{display:inline-block;margin:0 6px 6px 0;font-size:12px;color:var(--tx2)}
+.w .tg{margin:0 3px 0 0}
+.gym{padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
+.num{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;color:#fff}
+.gym p{margin:3px 0;font-size:13.5px;color:var(--tx2)}
+.gym b{color:var(--tx)}
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(var(--bg2),var(--bg3))}
+.tl .st{position:relative;padding:14px 16px;margin-bottom:12px}
+.tl .st::before{content:"";position:absolute;left:-23px;top:20px;width:15px;height:15px;border-radius:50%;background:var(--tx);border:3px solid var(--bg1)}
+.note{padding:14px 16px;font-size:13px;color:var(--tx2);margin-top:14px}
+.view{display:none}.view.on{display:block}
+</style>
+</head>
+<body>
+<header>
+<h1>Poke<span>Stat</span></h1>
+<p class="sub">Pokédex Gen 8 · Gen 9 · Légendes Z-A &nbsp;|&nbsp; Arènes et parcours de Pokémon Écarlate</p>
+</header>
+<main>
+<section id="v-dex" class="view on">
+<input id="q" type="search" placeholder="Rechercher un Pokémon…">
+<div class="chips" id="gf"></div>
+<div class="chips" id="tf"></div>
+<div class="grid" id="grid"></div>
+</section>
+<section id="v-gym" class="view"><div id="gyms"></div></section>
+<section id="v-path" class="view"><div class="tl" id="path"></div>
+<div class="glass note">Les niveaux recommandés sont indicatifs : ils correspondent au niveau moyen de l’équipe du champion. Le jeu est non linéaire, mais cet ordre garde une progression régulière.</div></section>
+</main>
+<nav class="tabbar glass" id="tabs"><button class="on" data-v="dex">Pokédex</button><button data-v="gym">Arènes</button><button data-v="path">Parcours</button></nav>
+<div class="sheet" id="sheet"><div class="panel glass" id="panel"></div></div>
+<script>
+const T={no:["Normal","#9a9a72"],fe:["Feu","#f0782c"],ea:["Eau","#4a82f0"],el:["Électrik","#f2c21c"],pl:["Plante","#4cb04a"],gl:["Glace","#5cc6d0"],co:["Combat","#c03028"],po:["Poison","#a040a0"],so:["Sol","#c9a24a"],vo:["Vol","#8a7ff0"],ps:["Psy","#f0518a"],in:["Insecte","#9aaa1a"],ro:["Roche","#a89030"],sp:["Spectre","#6a509a"],dr:["Dragon","#6a38f0"],te:["Ténèbres","#6a5446"],ac:["Acier","#8a8aa6"],fa:["Fée","#e87aa8"]};
+const C={no:["","ro ac","sp"],fe:["pl gl in ac","fe ea ro dr",""],ea:["fe so ro","ea pl dr",""],el:["ea vo","el pl dr","so"],pl:["ea so ro","fe pl po vo in dr ac",""],gl:["pl so vo dr","fe ea gl ac",""],co:["no gl ro te ac","po vo ps in fa","sp"],po:["pl fa","po so ro sp","ac"],so:["fe el po ro ac","pl in","vo"],vo:["pl co in","el ro ac",""],ps:["co po","ps ac","te"],in:["pl ps te","fe co po vo sp ac fa",""],ro:["fe gl vo in","co so ac",""],sp:["ps sp","te","no"],dr:["dr","ac","fa"],te:["ps sp","co te fa",""],ac:["gl ro fa","fe ea el ac",""],fa:["co dr te","fe po ac",""]};
+const S=["PV","Atq","Déf","Atq Sp","Déf Sp","Vit"];
+// nom, gen, types, stats, talents, capacités
+const P=[
+["Corvaillus",8,"vo ac","98 87 105 53 85 67","Pression, Anxiété, Armure Miroir","Rapace, Tête de Fer, Plaquage Défense, Atterrissage"],
+["Lanssorien",8,"dr sp","88 120 75 100 75 142","Corps Sain, Infiltration, Corps Maudit","Draco-Flèches, Ball’Ombre, Demi-Tour, Draco-Météore"],
+["Gorythmic",8,"pl","100 125 90 60 70 85","Engrais, Électro-Herbe","Herbicroc, Martobois, Dégommage, Demi-Tour"],
+["Pyrobut",8,"fe","80 116 75 65 75 119","Brasier, Libéro","Boulet Pyro, Pied Voltige, Demi-Tour, Contre-Terrain"],
+["Lézargus",8,"ea","70 85 65 125 65 120","Torrent, Tireur d’Élite","Hydrocanon, Laser Glace, Tir Sniper, Lame d’Air"],
+["Salarsen",8,"el po","75 98 70 114 70 75","Punk Rock, Plus, Technicien","Surcharge, Bombe Beurk, Mégaphone, Rapide Rythme"],
+["Zacian",8,"fa","92 120 115 80 115 138","Épée Intrépide","Câlinerie, Lame Behémoth, Lame Sacrée, Danse-Lames"],
+["Sorcilence",8,"ps fa","57 90 95 136 103 29","Soin, Anticipation, Miroir Magique","Éclat Magique, Psyko, Feu Mystique, Distorsion"],
+["Urshifu",8,"co te","100 130 100 63 60 97","Poing Invisible","Frappe Mauvaise, Close Combat, Coup Bas, Danse-Lames"],
+["Éthernatos",8,"po dr","140 85 95 145 95 130","Pression","Canon Dynamax, Bombe Beurk, Lance-Flammes, Soin"],
+["Miascarade",9,"pl te","76 110 70 81 70 123","Engrais, Protéen","Fleur Truquée, Dégommage, Demi-Tour, Triple Axel"],
+["Skelédenfer",9,"fe sp","104 75 100 110 75 66","Brasier, Inconscient","Chant Brûlant, Ball’Ombre, Paresse, Feu Follet"],
+["Palmaval",9,"ea co","85 120 80 85 75 85","Torrent, Impudence","Aqua-Pas, Close Combat, Atterrissage, Danse-Lames"],
+["Gholdengo",9,"ac sp","87 60 95 133 91 84","Corps Divin","Pluie de Pièces, Ball’Ombre, Machination, Exploforce"],
+["Kingambit",9,"te ac","100 135 120 60 85 50","Battant, Chef de Meute, Pression","Coup Fatal, Coup Bas, Tête de Fer, Danse-Lames"],
+["Glaivodo",9,"dr gl","115 145 92 75 86 87","Échange Thermique, Corps Gel","Lame Dragon, Chute Glace, Séisme, Danse Draco"],
+["Koraidon",9,"co dr","100 135 115 85 100 135","Pouls Orichalque","Collision Course, Boutefeu, Draco-Griffe, Danse-Lames"],
+["Miraidon",9,"el dr","100 85 100 135 115 135","Moteur Hadron","Électro-Dérive, Draco-Météore, Change Éclair, Parabocharge"],
+["Annihilape",9,"co sp","110 115 80 50 90 90","Esprit Vital, Attention, Battant","Poing Rage, Poing-Drain, Détricanon, Gonflette"],
+["Garganacl",9,"ro","100 100 130 45 90 35","Sel Purifiant","Sel Curatif, Lame de Roc, Soin, Abri"],
+["Flotte-Mèche",9,"sp fa","55 55 55 135 135 135","Paléosynthèse","Pouvoir Lunaire, Ball’Ombre, Vent Glace, Abri"],
+["Garde-de-Fer",9,"fa co","74 130 90 120 60 116","Charge Quark","Poing Extrême, Close Combat, Dégommage, Danse-Lames"],
+["Fort-Ivoire",9,"so co","115 131 131 53 53 87","Paléosynthèse","Plongée Mêlée, Close Combat, Tour Rapide, Dégommage"],
+["Forgelina",9,"fa ac","85 75 77 70 105 94","Brise Moule, Tempo Perso, Pickpocket","Marteau-Gigaton, Câlinerie, Piège de Roc, Danse-Lames"],
+["Lucario","ZA","co ac","70 110 70 115 70 90","Attention, Pugnacité, Justicier","Aurasphère, Close Combat, Luminocanon, Danse-Lames"],
+["Amphinobi","ZA","ea te","72 95 67 103 71 122","Torrent, Protéen","Hydrocanon, Vibrobscur, Laser Glace, Piège de Roc"],
+["Carchacrok","ZA","dr so","108 130 95 80 85 102","Voile Sable, Peau Dure","Séisme, Draco-Griffe, Lame de Roc, Danse-Lames"],
+["Blindépique","ZA","pl co","88 107 122 74 75 64","Engrais, Pare-Balles","Martobois, Pico-Défense, Poing-Drain, Séisme"],
+["Goupelin","ZA","fe ps","75 69 72 114 100 104","Brasier, Magicien","Lance-Flammes, Psyko, Feu Mystique, Éclat Magique"],
+["Méganium","ZA","pl","80 82 100 83 100 80","Engrais, Feuille Garde","Tempête Florale, Séisme, Synthèse, Draco-Queue"],
+["Roitiflam","ZA","fe co","110 123 65 100 65 65","Brasier, Téméraire","Boutefeu, Marto-Poing, Éclair Fou, Fracass’Tête"],
+["Aligatueur","ZA","ea","85 105 100 79 83 78","Torrent, Sans Limite","Cascade, Crocs Givre, Mâchouille, Danse Draco"],
+["Angoliath",8,"te fa","95 120 65 95 75 60","Farceur, Fouille, Pickpocket","Câlinerie, Dégommage, Mur Lumière, Protection"],
+["Duralugon",8,"ac dr","70 95 115 120 50 85","Métal Léger, Métal Lourd, Anxiété","Draco-Météore, Luminocanon, Lame de Roc, Poing Météore"],
+["Armarouge",9,"fe ps","85 60 100 125 80 75","Torche, Armure Fragile","Psyko, Lance-Flammes, Distorsion"],
+["Malvalame",9,"fe sp","75 125 80 60 100 85","Torche, Armure Fragile","Boutefeu, Griffe Ombre, Close Combat, Danse-Lames"],
+["Rugit-Lune",9,"dr te","105 139 71 55 101 119","Paléosynthèse","Danse Draco, Dégommage, Séisme, Acrobatie"],
+["Mains-de-Fer",9,"co el","154 140 108 50 68 50","Charge Quark","Close Combat, Éclair Fou, Poing-Drain, Change Éclair"],
+["Iron Bundle",9,"gl ea","56 80 114 124 60 136","Charge Quark","Laser Glace, Hydrocanon, Vent Glace, Machination"],
+["Ursaking",9,"so no","130 140 105 45 80 50","Cran, Pare-Balles, Anxiété","Séisme, Façade, Close Combat, Plaquage"],
+["Germignon","ZA","pl","45 49 65 49 65 45"],["Macronium","ZA","pl","60 62 80 63 80 60"],["Gruikui","ZA","fe","65 63 45 45 45 45"],["Grotichon","ZA","fe co","90 93 55 70 55 55"],["Kaiminus","ZA","ea","50 65 64 44 48 43"],["Crocrodil","ZA","ea","65 80 80 59 63 58"],
+["Marisson","ZA","pl","56 61 65 48 45 38"],["Boguérisse","ZA","pl","61 78 95 56 58 57"],["Feunnec","ZA","fe","40 45 40 62 60 60"],["Roussil","ZA","fe","59 59 58 90 70 73"],["Grenousse","ZA","ea","41 56 40 62 44 71"],["Croâporal","ZA","ea","54 63 52 83 56 97"],
+["Fouinette","ZA","no","38 36 38 32 36 57"],["Excavarenne","ZA","no so","85 56 77 50 77 78"],["Passerouge","ZA","no vo","45 50 43 40 38 62"],["Braisillon","ZA","fe vo","62 73 55 56 52 84"],["Flambusard","ZA","fe vo","78 81 71 74 69 126"],
+["Lépidonille","ZA","in","38 35 40 27 25 35"],["Pérégrain","ZA","in","45 22 60 27 30 29"],["Prismillon","ZA","in vo","80 52 50 90 50 89"],["Hélionceau","ZA","fe no","62 50 58 73 54 72"],["Némélios","ZA","fe no","86 68 72 109 66 106"],
+["Flabébé","ZA","fa","44 38 39 61 79 42"],["Floette","ZA","fa","54 45 47 75 98 52"],["Florges","ZA","fa","78 65 68 112 154 75"],["Cabriolaine","ZA","pl","66 65 48 62 57 52"],["Chevroum","ZA","pl","123 100 62 97 81 68"],
+["Pandespiègle","ZA","co","67 82 62 46 48 43"],["Pandarbare","ZA","co te","95 124 78 69 71 58"],["Furfrou","ZA","no","75 80 60 65 90 102"],["Psystigri","ZA","ps","62 48 54 63 60 68"],["Mistigrix","ZA","ps","74 48 76 83 81 104"],
+["Monorpale","ZA","ac sp","45 80 100 35 37 28"],["Dimoclès","ZA","ac sp","59 110 150 45 49 35"],["Exagide","ZA","ac sp","60 50 140 50 140 60"],["Fluvetin","ZA","fa","78 52 60 63 65 23"],["Cocotine","ZA","fa","101 72 72 99 89 29"],
+["Sucroquin","ZA","fa","62 48 66 59 57 49"],["Cupcanaille","ZA","fa","82 80 86 85 75 72"],["Sepiatop","ZA","te ps","53 54 53 37 46 45"],["Sepiatroce","ZA","te ps","86 92 88 68 75 73"],["Opermine","ZA","ro ea","42 52 67 39 56 50"],["Golgopathe","ZA","ro ea","72 105 115 54 86 68"],
+["Venalgue","ZA","po ea","50 60 60 60 60 30"],["Kravarech","ZA","po dr","65 75 90 97 123 44"],["Flingouste","ZA","ea","50 53 62 58 63 44"],["Gamblast","ZA","ea","71 73 88 120 89 59"],["Galvaran","ZA","el no","44 38 33 61 43 70"],["Iguolta","ZA","el no","62 55 52 109 94 109"],
+["Ptyranidur","ZA","ro dr","58 89 77 45 45 48"],["Rexillius","ZA","ro dr","82 121 119 69 59 71"],["Amagara","ZA","ro gl","77 59 50 67 63 46"],["Dragmara","ZA","ro gl","123 77 72 99 92 58"],["Nymphali","ZA","fa","95 65 65 110 130 60"],
+["Brutalibré","ZA","co vo","78 92 75 74 63 118"],["Dedenne","ZA","el fa","67 58 57 81 67 101"],["Carbink","ZA","ro fa","50 50 150 50 150 50"],["Mucuscule","ZA","dr","45 50 35 55 75 40"],["Colimucus","ZA","dr","68 75 53 83 113 60"],["Muplodocus","ZA","dr","90 100 70 110 150 80"],
+["Trousselin","ZA","ac fa","57 80 91 80 87 75"],["Brocélôme","ZA","sp pl","43 70 48 50 60 38"],["Desséliande","ZA","sp pl","85 110 76 65 82 56"],["Pitrouille","ZA","sp pl","49 66 70 44 55 51"],["Banshitrouye","ZA","sp pl","65 90 122 58 75 84"],
+["Grelaçon","ZA","gl","55 69 85 32 35 28"],["Séracrawl","ZA","gl","95 117 184 44 46 28"],["Sonistrelle","ZA","vo dr","40 30 35 45 40 55"],["Bruyverne","ZA","vo dr","85 70 80 97 80 123"],
+["Xerneas","ZA","fa","126 131 95 131 98 99"],["Yveltal","ZA","te vo","126 131 95 131 98 99"],["Zygarde","ZA","dr so","108 100 121 81 95 95"],["Diancie","ZA","ro fa","50 100 150 100 150 50"],["Hoopa","ZA","ps sp","80 110 60 150 130 70"],["Volcanion","ZA","fe ea","80 110 120 130 90 70"],["Zeraora","ZA","el","88 112 75 102 80 143"],
+["Pikachu","ZA","el","35 55 40 50 50 90"],["Raichu","ZA","el","60 90 55 90 80 110"],["Mélodelfe","ZA","fa","95 70 73 95 90 60"],["Alakazam","ZA","ps","55 50 45 135 95 120"],["Ectoplasma","ZA","sp po","60 65 60 130 75 110"],["Staross","ZA","ea ps","60 75 85 100 85 115"],["Flagadoss","ZA","ea ps","95 75 110 100 80 30"],
+["Léviator","ZA","ea vo","95 125 79 60 100 81"],["Ptéra","ZA","ro vo","80 105 65 60 75 130"],["Kangourex","ZA","no","105 95 80 40 80 90"],["Scarabrute","ZA","in","65 125 100 55 70 85"],["Tortank","ZA","ea","79 83 100 85 105 78"],["Dracaufeu","ZA","fe vo","78 84 78 109 85 100"],["Florizarre","ZA","pl po","80 82 83 100 100 80"],
+["Pharamp","ZA","el","90 75 85 115 90 55"],["Steelix","ZA","ac so","75 85 200 55 65 30"],["Scarhino","ZA","in co","80 125 75 40 95 85"],["Démolosse","ZA","te fe","75 90 50 110 80 95"],["Tyranocif","ZA","ro te","100 134 110 95 100 61"],
+["Jungko","ZA","pl","70 85 65 105 85 120"],["Braségali","ZA","fe co","80 120 70 110 70 80"],["Laggron","ZA","ea so","100 110 90 85 90 60"],["Gardevoir","ZA","ps fa","68 65 65 125 115 80"],["Gallade","ZA","ps co","68 125 65 65 115 80"],["Élecsprint","ZA","el","70 75 60 105 60 105"],
+["Camérupt","ZA","fe so","70 100 70 105 75 40"],["Altaria","ZA","dr vo","75 70 90 70 105 80"],["Absol","ZA","te","65 130 60 75 60 75"],["Drattak","ZA","dr vo","95 135 80 110 80 100"],["Métalosse","ZA","ac ps","80 135 130 95 90 70"],
+["Branette","ZA","sp","64 115 65 83 63 65"],["Charmina","ZA","co ps","60 60 75 60 75 80"],["Mysdibule","ZA","ac fa","50 85 85 55 55 50"],["Oniglali","ZA","gl","80 80 80 80 80 80"],["Momartik","ZA","gl sp","70 80 70 80 70 110"],["Lockpin","ZA","no","65 76 84 54 96 105"],["Draïeul","ZA","no dr","78 60 85 135 91 36"],["Hexadron","ZA","co","65 100 100 70 60 75"],
+["Aspicot","ZA","in po","40 35 30 20 20 50"],["Coconfort","ZA","in po","45 25 50 25 25 35"],["Dardargnan","ZA","in po","65 90 40 45 80 75"],["Roucool","ZA","no vo","40 45 40 35 35 56"],["Roucoups","ZA","no vo","63 60 55 50 50 71"],["Roucarnage","ZA","no vo","83 80 75 70 70 101"],
+["Wattouat","ZA","el","55 40 40 65 45 35"],["Lainergie","ZA","el","70 55 55 80 60 45"],["Ratentif","ZA","no","45 55 39 35 39 42"],["Miradar","ZA","no","60 85 69 60 69 77"],["Rozbouton","ZA","pl po","40 30 35 50 70 55"],["Rosélia","ZA","pl po","50 60 45 100 80 65"],["Roserade","ZA","pl po","60 70 65 125 105 90"],
+["Magicarpe","ZA","ea","20 10 55 15 20 80"],["Stari","ZA","ea","30 45 55 70 55 85"],["Miamiasme","ZA","po","50 50 62 40 62 65"],["Miasmax","ZA","po","80 95 82 60 82 75"],["Pichu","ZA","el","20 40 15 35 35 60"],["Mélo","ZA","fa","50 25 28 45 55 15"],["Mélofée","ZA","fa","70 45 48 60 65 35"],
+["Mimigal","ZA","in po","40 60 40 40 40 30"],["Migalos","ZA","in po","70 90 70 60 70 40"],["Abo","ZA","po","35 60 44 40 54 55"],["Arbok","ZA","po","60 95 69 65 79 80"],["Abra","ZA","ps","25 20 15 105 55 90"],["Kadabra","ZA","ps","40 35 30 120 70 105"],["Fantominus","ZA","sp po","30 35 30 100 35 80"],["Spectrum","ZA","sp po","45 50 45 115 55 95"],
+["Venipede","ZA","in po","30 45 59 30 39 57"],["Whirlipede","ZA","in po","40 55 99 40 79 47"],["Scolipede","ZA","in po","60 100 89 55 69 112"],["Chétiflor","ZA","pl po","50 75 35 70 30 40"],["Boustiflor","ZA","pl po","65 90 50 85 45 55"],["Empiflor","ZA","pl po","80 105 65 100 70 70"],
+["Feuillajou","ZA","pl","50 53 48 53 48 64"],["Feuiloutan","ZA","pl","75 98 63 98 63 101"],["Flamajou","ZA","fe","50 53 48 53 48 64"],["Flamoutan","ZA","fe","75 98 63 98 63 101"],["Flotajou","ZA","ea","50 53 48 53 48 64"],["Flotoutan","ZA","ea","75 98 63 98 63 101"],
+["Méditikka","ZA","co ps","30 56 55 40 55 60"],["Dynavolt","ZA","el","40 45 40 65 40 65"],["Tarsal","ZA","ps fa","28 25 25 45 35 40"],["Kirlia","ZA","ps fa","38 35 35 65 55 50"],["Malosse","ZA","te fe","45 60 30 80 50 65"],["Tylton","ZA","no vo","45 40 60 40 75 50"],["Nanméouïe","ZA","no","103 60 86 60 86 50"],
+["Évoli","ZA","no","55 55 50 45 65 55"],["Aquali","ZA","ea","130 65 60 110 95 65"],["Voltali","ZA","el","65 65 60 110 95 130"],["Pyroli","ZA","fe","65 130 60 95 110 65"],["Mentali","ZA","ps","65 65 60 130 95 110"],["Noctali","ZA","te","95 65 110 60 130 65"],["Phyllali","ZA","pl","65 110 130 60 65 95"],["Givrali","ZA","gl","65 60 110 130 95 65"],
+["Laporeille","ZA","no","55 66 44 44 56 85"],["Skelénox","ZA","sp","44 75 35 63 33 45"],["Sorbébé","ZA","gl","36 50 50 65 60 44"],["Sorboul","ZA","gl","51 65 65 80 75 59"],["Sorbouboul","ZA","gl","71 95 85 110 95 79"],["Chamallot","ZA","fe so","60 60 40 65 45 35"],
+["Hippopotas","ZA","so","68 72 78 38 42 32"],["Hippodocus","ZA","so","108 112 118 68 72 47"],["Rototaupe","ZA","so","60 85 40 30 45 68"],["Minotaupe","ZA","so ac","110 135 60 50 65 88"],["Mascaïman","ZA","so te","50 72 35 35 35 65"],["Escroco","ZA","so te","60 82 45 45 45 74"],["Crocorible","ZA","so te","95 117 80 65 70 92"],
+["Machoc","ZA","co","70 80 50 35 35 35"],["Machopeur","ZA","co","80 100 70 50 60 45"],["Mackogneur","ZA","co","90 130 80 65 85 55"],["Griknot","ZA","dr so","58 70 45 40 45 42"],["Carmache","ZA","dr so","68 90 65 50 55 82"],["Riolu","ZA","co","40 70 40 35 40 60"],["Ténéfix","ZA","te sp","50 75 75 65 65 50"],
+["Ramoloss","ZA","ea ps","90 65 65 40 40 15"],["Roigada","ZA","ea ps","95 75 80 100 110 30"],["Carvanha","ZA","ea te","45 90 20 65 20 65"],["Sharpedo","ZA","ea te","70 120 40 95 40 95"],["Anchwatt","ZA","el","35 55 40 45 40 60"],["Lampéroie","ZA","el","65 85 70 75 70 40"],["Ohmassacre","ZA","el","85 115 80 105 80 50"],
+["Minidraco","ZA","dr","41 64 45 50 50 50"],["Draco","ZA","dr","61 84 65 70 70 70"],["Dracolosse","ZA","dr vo","91 134 95 100 100 80"],["Bulbizarre","ZA","pl po","45 49 49 65 65 45"],["Herbizarre","ZA","pl po","60 62 63 80 80 60"],["Salamèche","ZA","fe","39 52 43 60 50 65"],["Reptincel","ZA","fe","58 64 58 80 65 80"],["Carapuce","ZA","ea","44 48 65 50 64 43"],["Carabaffe","ZA","ea","59 63 80 65 80 58"],
+["Limonde","ZA","so el","109 66 84 81 99 32"],["Cadoizo","ZA","gl vo","45 55 45 65 45 75"],["Stalgamin","ZA","gl","50 50 50 50 50 50"],["Blizzi","ZA","pl gl","60 62 50 62 60 40"],["Blizzaroi","ZA","pl gl","90 92 75 92 85 60"],["Insécateur","ZA","in vo","70 110 80 55 80 105"],["Cizayox","ZA","in ac","70 130 100 55 80 65"],["Emolga","ZA","el vo","55 75 60 75 60 103"],
+["Baggiguane","ZA","te co","50 75 70 35 70 48"],["Baggaïd","ZA","te co","65 90 115 45 115 58"],["Funécire","ZA","sp fe","50 30 55 65 55 20"],["Mélancolux","ZA","sp fe","60 40 60 95 60 55"],["Lugulabre","ZA","sp fe","60 55 90 145 90 80"],
+["Onix","ZA","ro so","35 45 160 30 45 70"],["Galekid","ZA","ac ro","50 70 100 40 40 30"],["Galegon","ZA","ac ro","60 90 140 50 50 40"],["Galeking","ZA","ac ro","70 110 180 60 60 50"],["Embrylex","ZA","ro so","50 64 50 45 50 41"],["Ymphect","ZA","ro so","70 84 70 65 70 51"],
+["Draby","ZA","dr","45 75 60 40 30 50"],["Drackhaus","ZA","dr","65 95 100 60 50 50"],["Terhal","ZA","ac ps","40 55 80 35 60 30"],["Métang","ZA","ac ps","60 75 100 55 80 50"],["Mewtwo","ZA","ps","106 110 90 154 90 130"],
+["Ouistempo",8,"pl","50 65 50 40 40 65"],["Badabouin",8,"pl","70 85 70 55 60 80"],["Flambino",8,"fe","50 71 40 40 40 69"],["Lapyro",8,"fe","65 86 60 55 60 94"],["Larméléon",8,"ea","50 40 40 70 40 70"],["Drizzile",8,"ea","65 60 55 95 55 90"],
+["Rongourmand",8,"no","70 55 55 35 35 25"],["Rongrigou",8,"no","120 95 95 55 75 20"],["Minisange",8,"vo","38 47 35 33 35 57"],["Corvisquire",8,"vo","68 67 55 43 55 77"],["Blipbug",8,"in","25 20 20 25 45 45"],["Dottler",8,"in ps","50 35 80 50 90 30"],["Orbeetle",8,"in ps","60 45 110 80 120 90"],
+["Nickit",8,"te","40 28 28 47 52 50"],["Thievul",8,"te","70 58 58 87 92 90"],["Gossifleur",8,"pl","40 40 60 40 60 10"],["Eldegoss",8,"pl","60 50 90 80 120 60"],["Moumouton",8,"no","42 40 55 40 45 48"],["Laineron",8,"no","72 80 100 60 90 88"],
+["Chewtle",8,"ea","50 64 50 38 38 44"],["Drednaw",8,"ea ro","90 115 90 48 68 74"],["Wattapik",8,"el","59 45 50 40 50 26"],["Boltund",8,"el","69 90 60 90 60 121"],["Rolycoly",8,"ro","30 40 50 40 50 30"],["Carkol",8,"ro fe","80 60 90 60 70 50"],["Coalossal",8,"ro fe","110 80 120 80 90 30"],
+["Applin",8,"pl dr","40 40 80 40 40 20"],["Flapple",8,"pl dr","70 110 80 95 60 70"],["Appletun",8,"pl dr","110 85 80 100 80 30"],["Silicobra",8,"so","52 57 75 35 50 46"],["Sandaconda",8,"so","72 107 125 65 70 71"],["Cramorant",8,"vo ea","70 85 55 85 95 85"],["Arrokuda",8,"ea","41 63 40 40 30 66"],["Barraskewda",8,"ea","61 123 60 60 50 136"],
+["Toxel",8,"el po","40 38 35 54 35 40"],["Sizzlipede",8,"fe in","50 65 45 50 50 45"],["Centiskorch",8,"fe in","100 115 65 90 90 65"],["Clobbopus",8,"co","50 68 60 50 50 32"],["Grapploct",8,"co","80 118 90 70 80 42"],["Sinistea",8,"sp","40 45 45 74 54 50"],["Polteageist",8,"sp","60 65 65 134 114 70"],
+["Hatenna",8,"ps","42 30 45 56 53 39"],["Hattrem",8,"ps","57 40 65 86 73 49"],["Impidimp",8,"te fa","45 45 30 55 40 50"],["Morgrem",8,"te fa","65 60 45 75 55 70"],["Obstagoon",8,"te no","93 90 101 60 81 95"],["Perrserker",8,"ac","70 110 100 50 60 50"],["Cursola",8,"sp","60 95 50 145 130 30"],
+["Sirfetch’d",8,"co","62 135 95 68 82 65"],["Mr. Rime",8,"gl ps","80 85 75 110 100 70"],["Runerigus",8,"so sp","58 95 145 50 105 30"],["Milcery",8,"fa","45 40 40 50 61 34"],["Alcremie",8,"fa","65 60 75 110 121 64"],["Pincurchin",8,"el","48 101 95 91 85 15"],
+["Snom",8,"gl in","30 25 35 45 30 20"],["Frosmoth",8,"gl in","70 65 60 125 90 65"],["Stonjourner",8,"ro","100 125 135 20 20 70"],["Eiscue",8,"gl","75 80 110 65 90 50"],["Indeedee",8,"ps no","60 65 55 105 95 95"],["Morpeko",8,"el te","58 95 58 70 58 97"],
+["Cufant",8,"ac","72 80 49 40 49 40"],["Copperajah",8,"ac","122 130 69 80 69 30"],["Dracozolt",8,"el dr","90 100 90 80 70 75"],["Arctozolt",8,"el gl","90 100 90 90 80 55"],["Dracovish",8,"ea dr","90 90 100 70 80 75"],["Arctovish",8,"ea gl","90 90 100 80 90 55"],
+["Dreepy",8,"dr sp","28 60 30 40 30 82"],["Drakloak",8,"dr sp","68 80 50 60 50 102"],["Zamazenta",8,"co","92 120 115 80 115 138"],["Kubfu",8,"co","60 90 60 53 50 72"],["Zarude",8,"te pl","105 120 105 70 95 105"],["Regieleki",8,"el","80 100 50 100 50 200"],["Regidrago",8,"dr","200 100 50 100 50 80"],["Glastrier",8,"gl","100 145 130 65 110 30"],["Spectrier",8,"sp","100 65 60 145 80 130"],["Calyrex",8,"ps pl","100 80 80 80 80 80"],
+["Caterpie",8,"in","45 30 35 20 20 45"],["Metapod",8,"in","50 20 55 25 25 30"],["Butterfree",8,"in vo","60 45 50 90 80 70"],["Grubbin",8,"in","47 62 45 55 45 46"],["Charjabug",8,"in el","57 82 95 55 75 36"],["Vikavolt",8,"in el","77 70 90 145 75 43"],["Hoothoot",8,"no vo","60 30 30 36 56 50"],["Noctowl",8,"no vo","100 50 50 86 96 70"],["Pidove",8,"no vo","50 55 50 36 30 43"],["Tranquill",8,"no vo","62 77 62 50 42 65"],["Unfezant",8,"no vo","80 115 80 65 55 93"],
+["Zigzagoon (Galar)",8,"te no","38 30 41 30 41 60"],["Linoone (Galar)",8,"te no","78 70 61 50 61 100"],["Lotad",8,"ea pl","40 30 30 40 50 30"],["Lombre",8,"ea pl","60 50 50 60 70 50"],["Ludicolo",8,"ea pl","80 70 70 90 100 70"],["Seedot",8,"pl","40 40 50 30 30 30"],["Nuzleaf",8,"pl te","70 70 40 60 40 60"],["Shiftry",8,"pl te","90 100 60 90 60 80"],["Purrloin",8,"te","41 50 37 50 37 66"],["Liepard",8,"te","64 88 50 88 50 106"],["Minccino",8,"no","55 50 40 40 40 75"],["Cinccino",8,"no","75 95 60 65 60 115"],
+["Bounsweet",8,"pl","42 30 38 30 38 32"],["Steenee",8,"pl","52 40 48 40 48 62"],["Tsareena",8,"pl","72 120 98 50 98 72"],["Oddish",8,"pl po","45 50 55 75 65 30"],["Gloom",8,"pl po","60 65 70 85 75 40"],["Vileplume",8,"pl po","75 80 85 110 90 50"],["Bellossom",8,"pl","75 80 95 90 100 50"],["Wingull",8,"ea vo","40 30 30 55 30 85"],["Pelipper",8,"ea vo","60 50 100 95 70 65"],["Joltik",8,"in el","50 47 50 57 50 65"],["Galvantula",8,"in el","70 77 60 97 60 108"],
+["Vulpix",8,"fe","38 41 40 50 65 65"],["Ninetales",8,"fe","73 76 75 81 100 100"],["Growlithe",8,"fe","55 70 45 70 50 60"],["Arcanine",8,"fe","90 110 80 100 80 95"],["Swinub",8,"gl so","50 50 40 30 30 50"],["Piloswine",8,"gl so","100 100 80 60 60 50"],["Mamoswine",8,"gl so","110 130 80 70 60 80"],["Baltoy",8,"so ps","40 40 55 40 70 55"],["Claydol",8,"so ps","60 70 105 70 120 75"],["Mudbray",8,"so","70 100 70 45 55 45"],["Mudsdale",8,"so","100 125 100 55 85 35"],["Dwebble",8,"in ro","50 65 85 35 35 55"],["Crustle",8,"in ro","70 105 125 65 75 45"],["Golett",8,"so sp","59 74 50 35 50 35"],["Golurk",8,"so sp","89 124 80 55 80 55"],
+["Munna",8,"ps","76 25 45 67 55 24"],["Musharna",8,"ps","116 55 85 107 95 29"],["Natu",8,"ps vo","40 50 45 70 45 70"],["Xatu",8,"ps vo","65 75 70 95 70 95"],["Stufful",8,"no co","70 75 50 45 50 50"],["Bewear",8,"no co","120 125 80 55 60 60"],["Krabby",8,"ea","30 105 90 25 25 50"],["Kingler",8,"ea","55 130 115 50 50 75"],["Wooper",8,"ea so","55 45 45 25 25 15"],["Quagsire",8,"ea so","95 85 85 65 65 35"],["Corphish",8,"ea","43 80 65 50 35 35"],["Crawdaunt",8,"ea te","63 120 85 90 55 55"],
+["Nincada",8,"in so","31 45 90 30 30 40"],["Ninjask",8,"in vo","61 90 45 50 50 160"],["Shedinja",8,"in sp","1 90 45 30 30 40"],["Tyrogue",8,"co","35 35 35 35 35 35"],["Hitmonlee",8,"co","50 120 53 35 110 87"],["Hitmonchan",8,"co","50 105 79 35 110 76"],["Hitmontop",8,"co","50 95 95 35 110 70"],["Klink",8,"ac","40 55 70 45 60 30"],["Klang",8,"ac","60 80 95 70 85 50"],["Klinklang",8,"ac","60 100 115 70 85 90"],["Combee",8,"in vo","30 30 42 30 42 70"],["Vespiquen",8,"in vo","70 80 102 80 102 40"],["Bronzor",8,"ac ps","57 24 86 24 86 23"],["Bronzong",8,"ac ps","67 89 116 79 116 33"],
+["Drifloon",8,"sp vo","90 50 34 60 44 70"],["Drifblim",8,"sp vo","150 80 44 90 54 80"],["Cherubi",8,"pl","45 35 45 62 53 35"],["Cherrim",8,"pl","70 60 70 87 78 85"],["Stunky",8,"po te","63 63 47 41 41 74"],["Skuntank",8,"po te","103 93 67 71 61 84"],["Tympole",8,"ea","50 50 40 50 40 64"],["Palpitoad",8,"ea so","75 65 55 65 55 69"],["Seismitoad",8,"ea so","105 95 75 85 75 74"],["Duskull",8,"sp","20 40 90 30 90 25"],["Dusclops",8,"sp","40 70 130 60 130 25"],["Dusknoir",8,"sp","45 100 135 65 135 45"],
+["Goldeen",8,"ea","45 67 60 35 50 63"],["Seaking",8,"ea","80 92 65 65 80 68"],["Remoraid",8,"ea","35 65 35 65 35 65"],["Octillery",8,"ea","75 105 75 105 75 45"],["Shellder",8,"ea","30 65 100 45 25 40"],["Cloyster",8,"ea gl","50 95 180 85 45 70"],["Feebas",8,"ea","20 15 20 10 55 80"],["Milotic",8,"ea","95 60 79 100 125 81"],["Basculin",8,"ea","70 92 65 80 55 98"],["Wishiwashi",8,"ea","45 20 20 25 25 40"],["Pyukumuku",8,"ea","55 60 130 30 130 5"],["Diglett",8,"so","10 55 25 35 45 95"],["Dugtrio",8,"so","35 100 50 50 70 120"],
+["Roggenrola",8,"ro","55 75 85 25 25 15"],["Boldore",8,"ro","70 105 105 50 40 20"],["Gigalith",8,"ro","85 135 130 60 80 25"],["Timburr",8,"co","75 80 55 25 35 35"],["Gurdurr",8,"co","85 105 85 40 50 40"],["Conkeldurr",8,"co","105 140 95 55 65 45"],["Woobat",8,"ps vo","55 55 43 55 43 72"],["Swoobat",8,"ps vo","67 57 55 77 55 114"],["Meowth (Galar)",8,"ac","50 65 55 40 40 40"],["Persian",8,"no","65 70 60 65 65 115"],["Cutiefly",8,"in fa","40 45 40 55 40 84"],["Ribombee",8,"in fa","60 55 60 95 70 124"],["Ferroseed",8,"pl ac","44 50 91 24 86 10"],["Ferrothorn",8,"pl ac","74 94 131 54 116 20"],
+["Dewpider",8,"ea in","38 40 52 40 72 27"],["Araquanid",8,"ea in","68 70 92 50 132 42"],["Wynaut",8,"ps","95 23 48 23 48 23"],["Wobbuffet",8,"ps","190 33 58 33 58 33"],["Farfetch’d (Galar)",8,"co","52 95 55 58 62 55"],["Chinchou",8,"ea el","75 38 38 56 56 67"],["Lanturn",8,"ea el","125 58 58 76 76 67"],["Croagunk",8,"po co","48 61 40 61 40 50"],["Toxicroak",8,"po co","83 106 65 86 65 85"],["Shuckle",8,"in ro","20 10 230 10 230 5"],["Barboach",8,"ea so","50 48 43 46 41 60"],["Whiscash",8,"ea so","110 78 73 76 71 60"],["Shellos",8,"ea","76 48 48 57 62 34"],["Gastrodon",8,"ea so","111 83 68 92 82 39"],["Wimpod",8,"in ea","25 35 40 20 30 80"],["Golisopod",8,"in ea","75 125 140 60 90 40"],["Corsola (Galar)",8,"sp","60 55 100 65 100 30"],
+["Salandit",8,"po fe","48 44 40 71 40 77"],["Salazzle",8,"po fe","68 64 60 111 60 117"],["Pawniard",8,"te ac","45 85 70 40 40 60"],["Bisharp",8,"te ac","65 125 100 60 70 70"],["Throh",8,"co","120 100 85 30 85 45"],["Sawk",8,"co","75 125 75 30 75 85"],["Koffing",8,"po","40 65 95 60 45 35"],["Weezing (Galar)",8,"po fa","65 90 120 85 70 60"],["Bonsly",8,"ro","50 80 95 10 45 10"],["Sudowoodo",8,"ro","70 100 115 30 65 30"],["Togepi",8,"fa","35 20 65 40 65 20"],["Togetic",8,"fa vo","55 40 85 80 105 40"],["Togekiss",8,"fa vo","85 50 95 120 115 80"],["Munchlax",8,"no","135 85 40 40 85 5"],["Snorlax",8,"no","160 110 65 65 110 30"],
+["Cottonee",8,"pl fa","40 27 60 37 50 66"],["Whimsicott",8,"pl fa","60 67 85 77 75 116"],["Rhyhorn",8,"so ro","80 85 95 30 30 25"],["Rhydon",8,"so ro","105 130 120 45 45 40"],["Rhyperior",8,"so ro","115 140 130 55 55 40"],["Gothita",8,"ps","45 30 50 55 65 45"],["Gothorita",8,"ps","60 45 70 75 85 55"],["Gothitelle",8,"ps","70 55 95 95 110 65"],["Solosis",8,"ps","45 30 40 105 50 20"],["Duosion",8,"ps","65 40 50 125 60 30"],["Reuniclus",8,"ps","110 65 75 125 85 30"],["Karrablast",8,"in","50 75 45 40 45 60"],["Escavalier",8,"in ac","70 135 105 60 105 20"],["Shelmet",8,"in","50 40 85 40 65 25"],["Accelgor",8,"in","80 70 40 100 60 145"],["Elgyem",8,"ps","55 55 55 85 55 30"],["Beheeyem",8,"ps","75 75 75 125 95 40"],
+["Cubchoo",8,"gl","55 70 40 60 40 40"],["Beartic",8,"gl","95 130 80 70 80 50"],["Rufflet",8,"no vo","70 83 50 37 50 60"],["Braviary",8,"no vo","100 123 75 57 75 80"],["Vullaby",8,"te vo","70 55 75 45 65 60"],["Mandibuzz",8,"te vo","110 65 105 55 95 80"],["Skorupi",8,"po in","40 50 90 30 55 65"],["Drapion",8,"po te","70 90 110 60 75 95"],["Sneasel",8,"te gl","55 95 55 35 75 115"],["Weavile",8,"te gl","70 120 65 45 85 125"],["Maractus",8,"pl","75 86 67 106 67 60"],["Sigilyph",8,"ps vo","72 58 80 103 80 97"],["Torkoal",8,"fe","70 85 140 85 70 20"],["Mimikyu",8,"sp fa","55 90 80 50 105 96"],
+["Qwilfish",8,"ea po","65 95 85 55 55 85"],["Frillish",8,"ea sp","55 40 50 65 85 40"],["Jellicent",8,"ea sp","100 60 70 85 105 60"],["Mareanie",8,"po ea","50 53 62 43 52 45"],["Toxapex",8,"po ea","50 63 152 53 142 35"],["Durant",8,"in ac","58 109 112 48 48 109"],["Heatmor",8,"fe","85 97 66 105 66 65"],["Trapinch",8,"so","45 100 45 45 45 10"],["Vibrava",8,"so dr","50 70 50 50 50 70"],["Flygon",8,"so dr","80 100 80 80 80 100"],["Axew",8,"dr","46 87 60 30 40 57"],["Fraxure",8,"dr","66 117 70 40 50 67"],["Haxorus",8,"dr","76 147 90 60 70 97"],["Yamask (Galar)",8,"so sp","38 55 85 30 65 30"],["Cofagrigus",8,"sp","58 50 145 95 105 30"],
+["Ponyta (Galar)",8,"ps","50 85 55 65 65 90"],["Rapidash (Galar)",8,"ps fa","65 100 70 80 80 105"],["Morelull",8,"pl fa","40 35 55 65 75 15"],["Shiinotic",8,"pl fa","60 45 80 90 100 30"],["Oranguru",8,"no ps","90 60 80 90 110 60"],["Passimian",8,"co","100 120 90 40 60 80"],["Turtonator",8,"fe dr","60 78 135 91 85 36"],["Togedemaru",8,"el ac","65 98 63 40 73 96"],["Mantyke",8,"ea vo","45 20 50 60 120 50"],["Mantine",8,"ea vo","85 40 70 80 140 70"],["Wailmer",8,"ea","130 70 35 70 35 60"],["Wailord",8,"ea","170 90 45 90 45 60"],["Dhelmise",8,"sp pl","70 131 100 86 90 40"],["Lapras",8,"ea gl","130 85 80 85 95 60"],["Lunatone",8,"ro ps","90 55 65 95 85 70"],["Solrock",8,"ro ps","90 95 85 55 65 70"],
+["Mime Jr.",8,"ps fa","20 25 45 70 90 60"],["Mr. Mime (Galar)",8,"gl ps","50 65 65 90 90 100"],["Darumaka (Galar)",8,"gl","70 90 45 15 45 50"],["Darmanitan (Galar)",8,"gl","105 140 55 30 55 95"],["Rotom",8,"el sp","50 50 77 95 77 91"],["Ditto",8,"no","48 48 48 48 48 48"],["Type: Null",8,"no","95 95 95 95 95 59"],["Silvally",8,"no","95 95 95 95 95 95"],["Deino",8,"te dr","52 65 50 45 50 38"],["Zweilous",8,"te dr","72 85 70 65 70 58"],["Hydreigon",8,"te dr","92 105 90 125 90 98"],["Jangmo-o",8,"dr","45 55 65 45 45 45"],["Hakamo-o",8,"dr co","55 75 90 65 70 65"],["Kommo-o",8,"dr co","75 110 125 100 105 85"]
+];
+const G=[
+["Katy","in","Cortondo","Nymble, Tarountula, Teddiursa",15,14],
+["Brassius","pl","Artazon","Petilil, Smoliv, Sudowoodo",17,16],
+["Iono","el","Levincia","Wattrel, Bellibolt, Luxio, Mismagius",24,24],
+["Kofu","ea","Cascarrafa","Veluza, Wugtrio, Crabominable",30,30],
+["Larry","no","Medali","Staravia, Oinkologne, Dudunsparce, Staraptor",36,35],
+["Ryme","sp","Montenevera","Toxtricity, Houndstone, Banette, Mimikyu",42,42],
+["Tulip","ps","Alfornada","Farigiraf, Gardevoir, Espathra, Florges",45,44],
+["Grusha","gl","Glaseado","Frosmoth, Beartic, Cetitan, Altaria",48,47]
+];
+const $=s=>document.querySelector(s);
+const tag=t=>`<span class="tg" style="background:${T[t][1]}">${T[t][0]}</span>`;
+function mult(def){const r={};for(const a in C){let m=1;for(const d of def){if(C[a][0].split(" ").includes(d))m*=2;if(C[a][1].split(" ").includes(d))m*=.5;if(C[a][2].split(" ").includes(d))m=0}r[a]=m}return r}
+let gen="all",ty="all",q="";
+function chips(){$("#gf").innerHTML=[["all","Toutes"],["8","Gen 8"],["9","Gen 9"],["ZA","Z-A"]].map(g=>`<button class="chip ${gen==g[0]?"on":""}" data-g="${g[0]}">${g[1]}</button>`).join("");
+$("#tf").innerHTML=`<button class="chip ${ty=="all"?"on":""}" data-t="all">Tous types</button>`+Object.keys(T).map(t=>`<button class="chip ${ty==t?"on":""}" data-t="${t}">${T[t][0]}</button>`).join("")}
+function grid(){const l=P.filter(p=>(gen=="all"||String(p[1])==gen)&&(ty=="all"||p[2].split(" ").includes(ty))&&p[0].toLowerCase().includes(q));
+$("#grid").innerHTML=l.map(p=>{const i=P.indexOf(p),t=p[2].split(" ");return `<div class="card glass" data-i="${i}"><span class="gen">${p[1]=="ZA"?"Z-A":"Gen "+p[1]}</span><div class="orb" style="background:linear-gradient(135deg,${T[t[0]][1]},${T[t[1]||t[0]][1]})">${p[0][0]}</div><b>${p[0]}</b>${t.map(tag).join("")}</div>`}).join("")||`<p>Aucun résultat.</p>`}
+function open(i){const p=P[i],t=p[2].split(" "),s=p[3].split(" ").map(Number),m=mult(t),tot=s.reduce((a,b)=>a+b,0);
+const grp=(lbl,f)=>{const k=Object.keys(m).filter(a=>f(m[a]));return k.length?`<span class="w"><b>${lbl}</b> `+k.map(tag).join("")+`</span><br>`:""};
+$("#panel").innerHTML=`<button class="x" id="cl">✕</button><h2>${p[0]}</h2>${t.map(tag).join("")}
+<h3>Statistiques (total ${tot})</h3>${s.map((v,j)=>`<div class="row"><span class="l">${S[j]}</span><span class="n">${v}</span><div class="bar"><i style="width:${Math.min(100,v/160*100)}%;background:${v>=100?"#34c759":v>=70?"#ffcc00":"#ff6b5c"}"></i></div></div>`).join("")}
+<h3>Faiblesses</h3>${grp("×4",v=>v==4)}${grp("×2",v=>v==2)}
+<h3>Résistances</h3>${grp("×½",v=>v==.5)}${grp("×¼",v=>v==.25)}${grp("Immunité",v=>v==0)}
+${p[4]?"<h3>Talents</h3>":""}${(p[4]||"").split(", ").filter(Boolean).map(x=>`<span class="mv">${x}</span>`).join("")}
+${p[5]?"<h3>Capacités apprenables</h3>":""}${(p[5]||"").split(", ").filter(Boolean).map(x=>`<span class="mv">${x}</span>`).join("")}`;
+$("#sheet").classList.add("open")}
+function gyms(){$("#gyms").innerHTML=G.map((g,i)=>{const c=Object.keys(C).filter(a=>C[a][0].split(" ").includes(g[1]));return `<div class="gym glass"><div class="num" style="background:${T[g[1]][1]}">${i+1}</div><div><b style="font-size:18px">${g[0]}</b> ${tag(g[1])}<p><b>Ville :</b> ${g[2]}</p><p><b>Équipe :</b> ${g[3]}</p><p><b>Niveau du champion :</b> ${g[4]} · <b>Niveau recommandé :</b> ${g[5]}+</p><p><b>Types efficaces :</b> ${c.map(tag).join("")}</p></div></div>`}).join("");
+$("#path").innerHTML=G.map((g,i)=>`<div class="st glass"><b>Étape ${i+1} — ${g[2]}</b><p style="margin:4px 0;font-size:13.5px;color:var(--tx2)">Champion ${g[0]} (${T[g[1]][0]}) · niveau conseillé ${g[5]}+</p></div>`).join("")+`${[["Rika","so","57"],["Poppy","ac","58"],["Larry","no vo","59"],["Hassel","dr","60"],["Geeta (Top Champion)","","62"]].map((e,i)=>`<div class="st glass"><b>Ligue ${i+1}/5 — ${e[0]}</b> ${e[1]?e[1].split(" ").map(tag).join(""):""}<p style="margin:4px 0;font-size:13.5px;color:var(--tx2)">${e[1]?"":"Types variés · "}niveau conseillé ~${e[2]}</p></div>`).join("")}`}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-g],[data-t],[data-i],[data-v],#cl");if(e.target.id=="sheet")$("#sheet").classList.remove("open");if(!b)return;
+if(b.dataset.g){gen=b.dataset.g;chips();grid()}else if(b.dataset.t){ty=b.dataset.t;chips();grid()}else if(b.dataset.i)open(+b.dataset.i);else if(b.dataset.v){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("#v-"+b.dataset.v).classList.add("on");document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x==b));scrollTo(0,0)}else if(b.id=="cl")$("#sheet").classList.remove("open")});
+$("#q").addEventListener("input",e=>{q=e.target.value.toLowerCase();grid()});
+chips();grid();gyms();
+</script>
+</body>
+</html>
